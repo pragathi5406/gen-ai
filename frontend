@@ -1,1 +1,145 @@
+# prediction .html
 
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Financial Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #22c55e;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .result {
+            background: #111827;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .tag {
+            padding: 5px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .high {
+            background: #ef4444;
+        }
+
+        .medium {
+            background: #f59e0b;
+        }
+
+        .low {
+            background: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>📊 Financial Dashboard</h2>
+
+        <div class="card">
+            <input id="income" placeholder="💵 Income">
+            <input id="expenses" placeholder="💸 Expenses">
+            <input id="savings" placeholder="🏦 Savings">
+            <input id="age" placeholder="Age">
+
+            <select id="goal">
+                <option value="General">Goal</option>
+                <option value="house">🏠 House</option>
+                <option value="car">🚗 Car</option>
+                <option value="retirement">👴 Retirement</option>
+            </select>
+
+            <button onclick="analyze()">Analyze</button>
+        </div>
+
+        <div id="result" class="card result"></div>
+
+    </div>
+
+    <script>
+        async function analyze() {
+            const res = await fetch("http://127.0.0.1:5000/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    income: income.value,
+                    expenses: expenses.value,
+                    savings: savings.value,
+                    age: age.value,
+                    goal: goal.value
+                })
+            });
+
+            const data = await res.json();
+
+            let riskClass = data.risk === "High" ? "high" :
+                data.risk === "Medium" ? "medium" : "low";
+
+            document.getElementById("result").innerHTML = `
+        <h3>Results</h3>
+        <p> Savings: ₹${data.monthly_savings}</p>
+        <p> Rate: ${data.savings_rate}%</p>
+        <p> Score: ${data.score}/100</p>
+
+        <p>⚠️ Risk: <span class="tag ${riskClass}">${data.risk}</span></p>
+
+        <p>Future (5 yrs): ₹${data.future_savings}</p>
+        <p>💸 SIP: ₹${data.sip}</p>
+        <p> ${data.goal_advice}</p>
+    `;
+        }
+    </script>
+
+</body>
+
+</html>
