@@ -143,3 +143,137 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+#chat bot.html
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Advisor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        #chat {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .msg {
+            margin: 6px 0;
+            padding: 8px;
+            border-radius: 10px;
+        }
+
+        .user {
+            background: #2563eb;
+        }
+
+        .bot {
+            background: #374151;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2> AI Financial Advisor</h2>
+
+        <div class="card">
+            <input id="income" placeholder="Income">
+            <input id="expenses" placeholder="Expenses">
+            <input id="savings" placeholder="Savings">
+        </div>
+
+        <div id="chat" class="card"></div>
+
+        <div class="card">
+            <input id="msg" placeholder="Ask about investments, tax, savings...">
+            <button onclick="send()">Send</button>
+        </div>
+
+    </div>
+
+    <script>
+        async function send() {
+            const message = msg.value;
+
+            const res = await fetch("http://127.0.0.1:5000/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: message,
+                    income: income.value,
+                    expenses: expenses.value,
+                    savings: savings.value
+                })
+            });
+
+            const data = await res.json();
+
+            document.getElementById("chat").innerHTML += `
+        <div class="msg user"> ${message}</div>
+        <div class="msg bot"> ${data.reply}</div>
+    `;
+
+            msg.value = "";
+        }
+    </script>
+
+</body>
+
+</html>
